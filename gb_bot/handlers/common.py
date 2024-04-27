@@ -82,7 +82,7 @@ class CommonHandler:
         request = requests.post(url=f'{self.url}/recommend_url/',
                                 headers={'accept': 'application/json',
                                          'Content-Type': 'application/json'},
-                                json={'text': text})
+                                json={'url': text})
         dialog_manager.dialog_data['result'] = request.json()
         await dialog_manager.switch_to(DefaultStates.result)
 
