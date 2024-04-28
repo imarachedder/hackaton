@@ -44,10 +44,10 @@ class CommonHandler:
         file_path = await self._download_file(file_id=voice_id, path=path)
         upload_file = {'file': (file_path, open(file_path, 'rb'), f'application/{file_path.split(".")[-1]}')}
         request = requests.post(url=f'{self.url}/recommend_audio/',
-                                headers={'accept': 'application/json',
-                                         'Content-Type': 'multipart/form-data'},
+                                headers={'accept': 'application/json'},
                                 files=upload_file)
         result = request.json()
+        print(result)
         has_error = result.get('detail', False)
         if has_error:
             await dialog_manager.switch_to(DefaultStates.error)
@@ -63,8 +63,7 @@ class CommonHandler:
         file_path = await self._download_file(file_id=document_id, path=path)
         upload_file = {'file': (file_path, open(file_path, 'rb'), f'application/{file_path.split(".")[-1]}')}
         request = requests.post(url=f'{self.url}/recommend/',
-                                headers={'accept': 'application/json',
-                                         'Content-Type': 'multipart/form-data'},
+                                headers={'accept': 'application/json'},
                                 files=upload_file)
         result = request.json()
         has_error = result.get('detail', False)
@@ -94,7 +93,7 @@ class CommonHandler:
                            widget: MessageInput,
                            dialog_manager: DialogManager, ):
         text = message.text
-        request = requests.post(url=f'{self.url}/recommend_url/',
+        request = requests.post(url=f'{self.url}/recommend_link/',
                                 headers={'accept': 'application/json',
                                          'Content-Type': 'application/json'},
                                 json={'url': text})
