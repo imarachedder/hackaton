@@ -13,5 +13,6 @@ def setup_default_dialogs():
         result_window,
         like_window,
         dislike_window,
+        error_window
     )
     return dialog

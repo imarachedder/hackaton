@@ -10,3 +10,4 @@ class DefaultStates(StatesGroup):
     result = State()
     like = State()
     dislike = State()
+    error = State()

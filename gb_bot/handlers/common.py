@@ -47,7 +47,12 @@ class CommonHandler:
                                 headers={'accept': 'application/json',
                                          'Content-Type': 'multipart/form-data'},
                                 files=upload_file)
-        dialog_manager.dialog_data['result'] = request.json()
+        result = request.json()
+        has_error = result.get('detail', False)
+        if has_error:
+            await dialog_manager.switch_to(DefaultStates.error)
+            return
+        dialog_manager.dialog_data['result'] = result
         await dialog_manager.switch_to(DefaultStates.result)
 
     async def on_file_sent(self, message: Message,
@@ -61,7 +66,12 @@ class CommonHandler:
                                 headers={'accept': 'application/json',
                                          'Content-Type': 'multipart/form-data'},
                                 files=upload_file)
-        dialog_manager.dialog_data['result'] = request.json()
+        result = request.json()
+        has_error = result.get('detail', False)
+        if has_error:
+            await dialog_manager.switch_to(DefaultStates.error)
+            return
+        dialog_manager.dialog_data['result'] = result
         await dialog_manager.switch_to(DefaultStates.result)
 
     async def on_text_sent(self, message: Message,
@@ -72,7 +82,12 @@ class CommonHandler:
                                 headers={'accept': 'application/json',
                                          'Content-Type': 'application/json'},
                                 json={'text': text})
-        dialog_manager.dialog_data['result'] = request.json()
+        result = request.json()
+        has_error = result.get('detail', False)
+        if has_error:
+            await dialog_manager.switch_to(DefaultStates.error)
+            return
+        dialog_manager.dialog_data['result'] = result
         await dialog_manager.switch_to(DefaultStates.result)
 
     async def on_url_sent(self, message: Message,
@@ -83,7 +98,12 @@ class CommonHandler:
                                 headers={'accept': 'application/json',
                                          'Content-Type': 'application/json'},
                                 json={'url': text})
-        dialog_manager.dialog_data['result'] = request.json()
+        result = request.json()
+        has_error = result.get('detail', False)
+        if has_error:
+            await dialog_manager.switch_to(DefaultStates.error)
+            return
+        dialog_manager.dialog_data['result'] = result
         await dialog_manager.switch_to(DefaultStates.result)
 
     async def get_message_types(self, *args, **kwargs):
