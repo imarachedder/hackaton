@@ -9,7 +9,7 @@ from aiogram_dialog import DialogManager, ChatEvent
 from aiogram_dialog.widgets.input import MessageInput
 
 from secretar_bot.states import DefaultStates
-from secretar_bot.main import _secretar_bot, url, file_url
+from secretar_bot.main import _secretar_bot
 
 
 class CommonHandler:
@@ -60,7 +60,7 @@ class CommonHandler:
         #Передаем скачанный файл на API с моделькой
         upload_file = {'file': (file_path, open(file_path, 'rb'), f'application/{file_path.split(".")[-1]}')}
         #Отправляем запрос на получение Протокола
-        request = requests.post(url=f'{url}/get_protocol/',
+        request = requests.post(url=f'{"localhost"}/get_protocol/',
                                 headers={'accept': 'application/json'},
                                 files=upload_file)
         result = request.json()

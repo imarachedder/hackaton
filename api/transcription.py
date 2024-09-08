@@ -3,25 +3,31 @@ from docx import Document
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from pydub import AudioSegment
+from dotenv import load_dotenv
 import requests
 import json
 import re
 import os
 import whisper
+import pathlib
+
+
+# Load environment variables from .env file
+load_dotenv()
 
 """
 Глобальная проблема:
 Pydub и другие фреймфорки по работе с аудио файлами не могут работать корректно с форматом .ogg 
 """
-def convert_to_wav(input_path, output_path):
-    #Определяем формат исходного аудиофайла по расширению
-    audio_format = os.path.splitext(input_path)[1][1:].lower()
-    audio = AudioSegment.from_file(input_path, format=f"{audio_format}")
-    #Экспортируем файл в формате WAV
-    audio.export(output_path, format="wav")
+def convert_to_wav(input_path: pathlib.Path, output_path: pathlib.Path) -> None:
+    try:
+        audio_format = input_path.suffix[1:].lower()
+        audio = AudioSegment.from_file(input_path, format=audio_format)
+        audio.export(output_path, format="wav")
+    except Exception as e:
+        print(f"Error during conversion: {e}")
 
-
-def transcribe_audio(file_path):
+def transcribe_audio(file_path: pathlib.Path):
     """
     на своих мощностях выбрал пока base model
     также можно выбрать другие модели
@@ -35,7 +41,7 @@ def transcribe_audio(file_path):
 
     return result['text']
 
-def diarize_audio(file_path):
+def diarize_audio(file_path: pathlib.Path):
     """
     Пытался вывести количество спикеров, но пока увы безуспешно
     :param file_path:
@@ -46,7 +52,7 @@ def diarize_audio(file_path):
     diarization = pipeline({'uri': 'filename', 'audio': file_path})
     return diarization
 
-def generate_text_with_gigachat(prompt, api_key):
+def generate_text_with_gigachat(prompt: str, api_key: str) -> str:
     """
     Для гигачата необходимы сертификаты минцифр для корректного запроса
     пока что работает на запросе по одному токену.
@@ -88,9 +94,9 @@ def generate_text_with_gigachat(prompt, api_key):
         return result.get('choices', [{}])[0].get('message', {}).get('content', '')
     else:
         print(f"Ошибка: {response.status_code}")
-        return None
+        return ""
 
-def create_document(transcription, summary, filename="meeting_protocol2.docx"):
+def create_document(transcription, summary):
     """
 
     :param transcription:
@@ -176,9 +182,9 @@ def extract_tasks(text):
 
 def get_token():
     url = "https://ngw.devices.sberbank.ru:9443/api/v2/oauth"
-    RqUID = "967aaa8b-db27-4f78-ba0f-548d0389e2c4"
-    authorization = "OGY2N2RiYzItYWYxZi00ZjQ0LTg1ZDEtMjgzYjE2NzYzZmYwOjk2N2FhYThiLWRiMjctNGY3OC1iYTBmLTU0OGQwMzg5ZTJjNA=="
-
+    RqUID = os.getenv('RQUID')
+    authorization = os.getenv('AUTHORIZATION')
+    # cert_path = os.getenv('CERT_PATH')
     cert_path = 'russian_trusted_root_ca.cer'
 
     payload = 'scope=GIGACHAT_API_PERS'
@@ -192,13 +198,14 @@ def get_token():
     response = requests.request("POST", url, headers=headers, data=payload, verify=cert_path)
     return response.json().get("access_token")
 
-def main():
+async def transcription(audio_file: pathlib.Path):
     # Основной процесс
     api_key = get_token()
-    convert_to_wav(r"D:\projects\hack\train\Встреча 2.mp3", r"D:\projects\hack\train\Встреча 2.wav")
-    transcription = transcribe_audio(r"D:\projects\hack\train\Встреча 2.wav")
+    convert_to_wav(audio_file, pathlib.Path("files")/"voice"/audio_file.with_suffix(".wav"))
+    transcription = transcribe_audio(pathlib.Path("files")/"voice"/audio_file.with_suffix(".wav"))
     # diarization = diarize_audio(r"D:\projects\hack\train\Встреча 2.wav")
 
     summary = generate_text_with_gigachat(transcription, api_key)
     create_document(transcription, summary)
     create_pdf_documents(transcription, summary)
+    return transcription
