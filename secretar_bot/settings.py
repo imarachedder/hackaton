@@ -3,6 +3,6 @@ from pydantic import BaseModel
 
 
 class BotSettings(BaseModel):
-    TOKEN: str = '7065341545:AAECpb0R87PNAB0z2Vwl2DgmRrDYFMMIK4M'
+    TOKEN: str = '7322700222:AAHLDJ3Ie7gJdeObu4ETj2ukfrXt_aN-bpQ'
 
 config = BotSettings()

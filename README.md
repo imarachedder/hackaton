@@ -23,3 +23,12 @@ Such simple tg bot and parser
    ```python gb_bot run.py```
    
 6. go to https://t.me/gb_course_search_bot and it try to give a personality course for you
+
+7. (Дополнительно установить ffmpeg (менеджер pip не всегда срабатывает)
+    при установке в конду использовать conda install -c conda-forge ffmpeg
+    или скачать отдельно с сайта https://ffmpeg.org/download.html пакеты кодека ffmpeg
+    Установите переменные среды с помощью путей к двоичным файлам FFmpeg:
+    В Windows запустите:
+    SET PATH=D:\path\to\transcription\bin;%PATH%
+    В Unix или MacOS запустите:
+    export FFMPEG_PATH=/path/to/ffmpeg:
